@@ -1,7 +1,6 @@
 import 'dart:io';
 
-import 'package:bsmart/provider/email_password_provider.dart';
-import 'package:bsmart/screens/login_screen/login_screen_vm.dart';
+import 'package:bsmart/screens/register_screen/register_screen_vm.dart';
 import 'package:bsmart/utilities/app_colors.dart';
 import 'package:bsmart/utilities/common_navigate.dart';
 import 'package:bsmart/utilities/font_utils.dart';
@@ -10,28 +9,31 @@ import 'package:bsmart/utilities/no_glow_scroll_behaviour.dart';
 import 'package:bsmart/utilities/size_utils.dart';
 import 'package:bsmart/utilities/utils.dart';
 import 'package:bsmart/widgets/card_clipper.dart';
+import 'package:bsmart/widgets/custom_back_button.dart';
 import 'package:bsmart/widgets/custom_circular_loader.dart';
 import 'package:bsmart/widgets/custom_text_field.dart';
 import 'package:bsmart/widgets/footer_button.dart';
 import 'package:flutter/material.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
-  LoginScreenVM viewModel = LoginScreenVM();
+class _RegisterScreenState extends State<RegisterScreen> {
+  RegisterScreenVM viewModel = RegisterScreenVM();
 
   final _passwordController = TextEditingController();
+  final _confPasswordController = TextEditingController();
   final _emailController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
   @override
   void dispose() {
     _passwordController.dispose();
+    _confPasswordController.dispose();
     _emailController.dispose();
     viewModel.dispose();
     super.dispose();
@@ -61,12 +63,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       height: SizeUtils.getHeight(420),
                       width: SizeUtils.getScreenWidth(),
                       child: Image.asset(
-                        Utils.getAssetJpg("img_login"),
+                        Utils.getAssetJpg("img_reg"),
                         fit: BoxFit.cover,
                       ),
                     ),
                     Padding(
-                      padding: EdgeInsets.only(top: SizeUtils.getHeight(330)),
+                      padding: EdgeInsets.only(top: SizeUtils.getHeight(220)),
                       child: ClipPath(
                         clipper: CardClipper(),
                         child: Container(
@@ -87,6 +89,23 @@ class _LoginScreenState extends State<LoginScreen> {
                                   height: SizeUtils.getHeight(90),
                                 ),
                                 verticalSpace(30),
+                                RichText(
+                                  textAlign: TextAlign.center,
+                                  text: TextSpan(
+                                    text: "Let's create an account",
+                                    style: FontUtils.getFont18Style(
+                                      color: AppColors.fontGrey,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                    children: <TextSpan>[
+                                      TextSpan(
+                                          text: '.',
+                                          style: FontUtils.getFont18Style(
+                                              color: AppColors.primaryColor)),
+                                    ],
+                                  ),
+                                ),
+                                verticalSpace(25),
                                 CustomTextField(
                                   label: "Email",
                                   controller: _emailController,
@@ -111,15 +130,34 @@ class _LoginScreenState extends State<LoginScreen> {
                                         value);
                                   },
                                 ),
+                                verticalSpace(25),
+                                CustomTextField(
+                                  label: "Confirm Password",
+                                  keyboardType: TextInputType.visiblePassword,
+                                  passwordField: true,
+                                  textCapitalization: TextCapitalization.none,
+                                  controller: _confPasswordController,
+                                  scrollpadding: SizeUtils.getHeight(150),
+                                  validator: (value) {
+                                    return TextFieldValidation
+                                        .confirmPasswordValidate(
+                                            value, _passwordController.text);
+                                  },
+                                ),
                                 verticalSpace(30),
                                 _footerButton(),
-                                verticalSpace(15),
-                                _footertext()
                               ],
                             ),
                           ),
                         ),
                       ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(
+                        left: SizeUtils.getWidth(24),
+                        top: SizeUtils.getHeight(24),
+                      ),
+                      child: CustomBackButton(),
                     )
                   ],
                 ),
@@ -141,36 +179,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: CustomCircularLoader(),
                 )
               : FooterButton(
-                  label: "Login",
+                  label: "Register",
                   onTap: () {
                     if (_formKey.currentState!.validate()) {
-                      viewModel.authFirebaseEmailPassword(
+                      viewModel.registerEmailPassword(
                           _emailController.text, _passwordController.text);
                     }
                   },
                 );
         });
-  }
-
-  Widget _footertext() {
-    // Sign up text inkwell widget
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
-          'Are you a new user?  ',
-          style: FontUtils.getFont14Style(color: AppColors.fontGrey),
-        ),
-        InkWell(
-          child: Text(
-            'Sign up',
-            style: FontUtils.getFont14Style(color: AppColors.primaryColor),
-          ),
-          onTap: () {
-            CommonNavigate(parentContext: context).navigateRegisterScreen();
-          },
-        )
-      ],
-    );
   }
 }

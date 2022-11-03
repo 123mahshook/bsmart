@@ -41,4 +41,33 @@ class EmailPasswordSignInProvider extends ChangeNotifier {
     Navigator.popUntil(context, (route) => route.isFirst);
     CommonNavigate(parentContext: context).navigateSplashScreen();
   }
+
+  Future registerEmailPassword(
+      BuildContext context, String email, String password) async {
+    try {
+      UserCredential userDtCr = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+              email: email.trim(), password: password.trim());
+      _user = FirebaseAuth.instance.currentUser!;
+
+      if (userDtCr.user != null) {
+        CommonNavigate(parentContext: context).navigateLoginScreen();
+      } else {
+        ShowToast(
+                title: "Sorry",
+                message: "User Registeration Failed",
+                parentContext: context)
+            .show();
+      }
+    } catch (e) {
+      // TODO
+      print(e);
+      ShowToast(
+              title: "Sorry",
+              message: "User Registeration Failed",
+              parentContext: context)
+          .show();
+    }
+    notifyListeners();
+  }
 }
