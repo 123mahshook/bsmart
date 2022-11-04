@@ -1,3 +1,4 @@
+import 'package:bsmart/screens/splash_screen/splash_screen_vm.dart';
 import 'package:bsmart/utilities/app_colors.dart';
 import 'package:bsmart/utilities/common_navigate.dart';
 import 'package:bsmart/utilities/font_utils.dart';
@@ -13,12 +14,13 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  SplashScreenVM viewModel = SplashScreenVM();
   double screenHeight = 0;
   double screenWidth = 0;
   @override
   void initState() {
     super.initState();
-    navigatetoLogin();
+    // navigatetoLogin();
   }
 
   @override
@@ -26,7 +28,7 @@ class _SplashScreenState extends State<SplashScreen> {
     screenHeight = MediaQuery.of(context).size.height;
     screenWidth = MediaQuery.of(context).size.width;
     SizeUtils.setSize(screenHeight, screenWidth);
-
+    viewModel.setContext(context);
     return SafeArea(
         child: Scaffold(
             backgroundColor: AppColors.white,
